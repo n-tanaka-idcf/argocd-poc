@@ -1,5 +1,5 @@
 ---
-githubConfigUrl: https://github.com/codequokka/argocd-poc
+githubConfigUrl: https://github.com/n-tanaka-idcf/argocd-poc
 
 minRunners: 1
 maxRunners: 1
