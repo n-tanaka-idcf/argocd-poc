@@ -1,0 +1,7 @@
+---
+environments:
+  poc: {}
+
+helmfiles:
+  - path: argocd/helmfile.yaml
+  - path: github-arc/helmfile.yaml
