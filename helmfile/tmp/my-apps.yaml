@@ -1,16 +1,61 @@
 ---
 apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: my-apps-set
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    # Git generator：全タグをスキャン
+    - git:
+        repoURL: https://github.com/n-tanaka-idcf/argocd-poc.git
+        revision: HEAD
+        files:
+          - path: "*"
+      # Post Selector で整数タグのみを抽出
+      selector:
+        matchExpressions:
+          - key: branch
+            operator: Matches
+            values:
+              - "^[0-9]+$"  # 整数のみマッチ
+  template:
+    metadata:
+      name: my-apps-{{ .branch }}
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/n-tanaka-idcf/argocd-poc.git
+        targetRevision: "{{ .branch }}"
+        path: helmfile
+        plugin: {}
+      destination:
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+---
+# deploy タグ用 Application
+apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-apps
+  name: my-apps-deploy
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/n-tanaka-idcf/argocd-poc
-    targetRevision: deploy # main
+    repoURL: https://github.com/n-tanaka-idcf/argocd-poc.git
+    targetRevision: deploy
     path: helmfile
     plugin: {}
   destination:
