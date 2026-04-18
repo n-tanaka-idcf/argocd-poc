@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/codequokka/argocd-poc.git
+    repoURL: https://github.com/n-tanaka-idcf/argocd-poc
     targetRevision: deploy # main
     path: helmfile
     plugin: {}
